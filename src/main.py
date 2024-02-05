@@ -1,10 +1,6 @@
 from copy import deepcopy
 from heapq import heappop, heappush
 from math import isqrt
-from random import random
-
-def to_key(grid: list) -> tuple:
-    return tuple([tuple(x) for x in grid])
 
 def valid_square(grid: list, top_left: tuple, n: int) -> bool:
     i, ii = top_left
@@ -48,7 +44,6 @@ def valid_state(grid: list, n: int) -> bool:
         
     return True
 
-
 def get_solution(initial_grid: list, n: int) -> list:
     missing_entries = []
     nn = n ** 2
@@ -58,11 +53,10 @@ def get_solution(initial_grid: list, n: int) -> list:
                 missing_entries.append((i, ii))
 
     N = len(missing_entries) - 1
-    visited = {to_key(initial_grid)}
-    Q = [(N, random(), initial_grid)]
+    Q = [(N, initial_grid)]
 
-    while Q != []:
-        current_idx, _, grid = heappop(Q)
+    while Q:
+        current_idx, grid = heappop(Q)
         if current_idx == -1:
             return grid
         i, ii = missing_entries[current_idx]
@@ -71,11 +65,10 @@ def get_solution(initial_grid: list, n: int) -> list:
             grid[i][ii] = k
             square = (i // n * n, ii // n * n)
             if valid_square(grid, square, n) == True and valid_row(grid, i, nn) == True and valid_col(grid, ii, nn) == True:
-                key = to_key(grid)
-                if key not in visited:
-                    heappush(Q, (current_idx - 1, random(), deepcopy(grid)))
-                    visited.add(key)
+                heappush(Q, (current_idx - 1, deepcopy(grid)))
+            
     return None
+
 
 input = open('input.txt').read().splitlines()
 n = isqrt(len(input))
