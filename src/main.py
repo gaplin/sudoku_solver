@@ -83,7 +83,13 @@ grid = []
 for line in input:
     grid.append([int(x) for x in line.split(' ')])
 
+if valid_state(grid, n) == False:
+    raise Exception('Invalid initial state')
+
 solution = get_solution(grid, n)
-print(valid_state(solution, n))
+if solution is None:
+    print('Solution not found')
+    exit()
+    
 for row in solution:
     print(row)
