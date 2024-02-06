@@ -44,8 +44,9 @@ def valid_state(grid: list, n: int) -> bool:
         
     return True
 
-def get_solution(initial_grid: list, n: int) -> list:
+def get_solutions(initial_grid: list, n: int, limit: int) -> list:
     missing_entries = []
+    result = []
     nn = n ** 2
     for i in range(nn):
         for ii in range(nn):
@@ -54,20 +55,24 @@ def get_solution(initial_grid: list, n: int) -> list:
 
     N = len(missing_entries) - 1
     Q = [(N, initial_grid)]
+    nums = [i for i in range(1, nn + 1)]
 
     while Q:
         current_idx, grid = heappop(Q)
         if current_idx == -1:
-            return grid
+            result.append(grid)
+            if len(result) == limit:
+                break
+            continue
         i, ii = missing_entries[current_idx]
 
-        for k in range(1, nn + 1):
+        for k in nums:
             grid[i][ii] = k
             square = (i // n * n, ii // n * n)
             if valid_square(grid, square, n) == True and valid_row(grid, i, nn) == True and valid_col(grid, ii, nn) == True:
                 heappush(Q, (current_idx - 1, deepcopy(grid)))
             
-    return None
+    return result
 
 
 input = open('input.txt').read().splitlines()
@@ -79,10 +84,11 @@ for line in input:
 if valid_state(grid, n) == False:
     raise Exception('Invalid initial state')
 
-solution = get_solution(grid, n)
-if solution is None:
+solutions = get_solutions(grid, n, 1)
+if solutions == []:
     print('Solution not found')
     exit()
     
+solution = solutions[0]
 for row in solution:
     print(row)
