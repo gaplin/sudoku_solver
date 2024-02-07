@@ -31,7 +31,7 @@ def __valid_col(grid: list, ii: int, nn: int) -> bool:
 
     return True
 
-def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool, prohibited: list = []) -> list:
+def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool) -> list:
     missing_entries = []
     result = []
     nn = n ** 2
@@ -61,15 +61,13 @@ def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool, prohi
             random.shuffle(nums)
 
         for k in nums:
-            if prohibited != [] and prohibited[i][ii] == k:
-                continue
             grid[i][ii] = k
             square = (i // n * n, ii // n * n)
             if __valid_square(grid, square, n) == True and __valid_row(grid, i, nn) == True and __valid_col(grid, ii, nn) == True:
                 heappush(Q, (current_idx - 1, random_or_normal(), deepcopy(grid)))
             
             grid[i][ii] = 0
-            
+    
     return result
 
 def generate_grid(n: int, filled_entries: int) -> list:
@@ -77,18 +75,18 @@ def generate_grid(n: int, filled_entries: int) -> list:
     empty_grid = [[0 for _ in range(nn)] for _ in range(nn)]
     idxes = [(i, ii) for i in range(nn) for ii in range(nn)]
     empty_entries = nn ** 2 - filled_entries
-    retries = 500
+    random_solution = get_solutions(empty_grid, n, 1, True)[0]
+    if empty_entries == 0:
+        return (random_solution, random_solution)
     
     while True:
-        random_solution = get_solutions(empty_grid, n, 1, True)[0]
-        if empty_entries == 0:
-            return (random_solution, random_solution)
-        for _ in range(retries):
-            empty_idxes = random.sample(idxes, empty_entries)
-            grid_cpy = deepcopy(random_solution)
-            for i, ii in empty_idxes:
-                grid_cpy[i][ii] = 0
+        empty_idxes = random.sample(idxes, empty_entries)
+        grid_cpy = deepcopy(random_solution)
+        for i, ii in empty_idxes:
+            grid_cpy[i][ii] = 0
 
-            solutions = get_solutions(grid_cpy, n, 1, False, random_solution)
-            if solutions == []:
-                return (grid_cpy, random_solution)
+            solutions = get_solutions(grid_cpy, n, 2, True)
+            if len(solutions) != 1:
+                break
+        else:
+            return (grid_cpy, random_solution)
