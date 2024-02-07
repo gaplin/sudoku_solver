@@ -31,7 +31,7 @@ def __valid_col(grid: list, ii: int, nn: int) -> bool:
 
     return True
 
-def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool, prohibited: set = set()) -> list:
+def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool, prohibited: list = []) -> list:
     missing_entries = []
     result = []
     nn = n ** 2
@@ -61,7 +61,7 @@ def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool, prohi
             random.shuffle(nums)
 
         for k in nums:
-            if (i, ii, k) in prohibited:
+            if prohibited != [] and prohibited[i][ii] == k:
                 continue
             grid[i][ii] = k
             square = (i // n * n, ii // n * n)
@@ -86,11 +86,9 @@ def generate_grid(n: int, filled_entries: int) -> list:
         for _ in range(retries):
             empty_idxes = random.sample(idxes, empty_entries)
             grid_cpy = deepcopy(random_solution)
-            prohibited = set()
             for i, ii in empty_idxes:
-                prohibited.add((i, ii, grid_cpy[i][ii]))
                 grid_cpy[i][ii] = 0
 
-            solutions = get_solutions(grid_cpy, n, 1, False, prohibited)
+            solutions = get_solutions(grid_cpy, n, 1, False, random_solution)
             if solutions == []:
                 return (grid_cpy, random_solution)
