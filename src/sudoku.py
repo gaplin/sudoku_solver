@@ -72,21 +72,29 @@ def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool) -> li
 
 def generate_grid(n: int, filled_entries: int) -> list:
     nn = n ** 2
+    N = nn ** 2
     empty_grid = [[0 for _ in range(nn)] for _ in range(nn)]
     idxes = [(i, ii) for i in range(nn) for ii in range(nn)]
-    empty_entries = nn ** 2 - filled_entries
+    empty_entries = N - filled_entries
     random_solution = get_solutions(empty_grid, n, 1, True)[0]
     if empty_entries == 0:
         return (random_solution, random_solution)
     
     while True:
-        empty_idxes = random.sample(idxes, empty_entries)
+        random.shuffle(idxes)
         grid_cpy = deepcopy(random_solution)
-        for i, ii in empty_idxes:
+        zeros = 0
+        left = empty_entries
+        m = N - 1
+        while m + 1 >= left and left > 0:
+            i, ii = idxes[m]
+            m -= 1
             grid_cpy[i][ii] = 0
-
             solutions = get_solutions(grid_cpy, n, 2, True)
-            if len(solutions) != 1:
-                break
-        else:
+            if len(solutions) == 1:
+                left -= 1
+            else:
+                grid_cpy[i][ii] = random_solution[i][ii]
+
+        if left == 0:
             return (grid_cpy, random_solution)
