@@ -40,12 +40,8 @@ def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool) -> li
             if initial_grid[i][ii] == 0:
                 missing_entries.append((i, ii))
 
-    def random_or_normal():
-        return random.random() if randomize == True else 0
-    
-
     N = len(missing_entries) - 1
-    Q = [(N, random_or_normal(), initial_grid)]
+    Q = [(N, random.random(), initial_grid)]
     nums = [i for i in range(1, nn + 1)]
 
     while Q:
@@ -64,7 +60,7 @@ def get_solutions(initial_grid: list, n: int, limit: int, randomize: bool) -> li
             grid[i][ii] = k
             square = (i // n * n, ii // n * n)
             if __valid_square(grid, square, n) == True and __valid_row(grid, i, nn) == True and __valid_col(grid, ii, nn) == True:
-                heappush(Q, (current_idx - 1, random_or_normal(), deepcopy(grid)))
+                heappush(Q, (current_idx - 1, random.random(), deepcopy(grid)))
             
             grid[i][ii] = 0
     
@@ -83,7 +79,6 @@ def generate_grid(n: int, filled_entries: int) -> list:
     while True:
         random.shuffle(idxes)
         grid_cpy = deepcopy(random_solution)
-        zeros = 0
         left = empty_entries
         m = N - 1
         while m + 1 >= left and left > 0:

@@ -7,7 +7,7 @@ filled_entries = 30
 if len(sys.argv) > 1:
     filled_entries = int(sys.argv[1])
     
-assert 17 < filled_entries <= nn ** 2
+assert 25 <= filled_entries <= nn ** 2
 
 (puzzle, solution) = sudoku.generate_grid(n, filled_entries)
 puzzle_file = open('puzzle.txt', 'w')
