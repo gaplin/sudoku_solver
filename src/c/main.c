@@ -126,29 +126,35 @@ int* get_random_solution(int grid[][NN]) {
     return NULL;
 }
 
-int count_solutions(int grid[][NN], pair zeros[], int zeros_count, int idx, int limit) {
+int count_solutions(int rows[], int cols[], int squares[], int square_idxes[][NN], pair zeros[], int zeros_count, int idx, int limit) {
     if(limit <= 0) {
         return 0;
     }
     pair zero = zeros[idx];
     int result = 0;
     for(int i = 1; i <= NN; ++i) {
-        grid[zero.first][zero.second] = i;
-        if(valid_col(grid, zero.second) && valid_row(grid, zero.first) && valid_square(grid, zero.first, zero.second)) {
+        int num_mask = (1 << i);
+        int square_idx = square_idxes[zero.first][zero.second];
+        if((rows[zero.first] & num_mask) == 0 && (cols[zero.second] & num_mask) == 0 && (squares[square_idx] & num_mask) == 0) {
             int solutions_found = 0;
             if(idx + 1 == zeros_count) {
                 solutions_found = 1;
             }
             else {
-                solutions_found = count_solutions(grid, zeros, zeros_count, idx + 1, limit - result);
+                rows[zero.first] |= num_mask;
+                cols[zero.second] |= num_mask;
+                squares[square_idx] |= num_mask;
+                solutions_found = count_solutions(rows, cols, squares, square_idxes, zeros, zeros_count, idx + 1, limit - result);
+                rows[zero.first] ^= num_mask;
+                cols[zero.second] ^= num_mask;
+                squares[square_idx] ^= num_mask;
             }
             result += solutions_found;
             if(result >= limit) {
-                break;
+                return result;
             }
         }
     }
-    grid[zero.first][zero.second] = 0;
     return result;
 }
 
@@ -164,7 +170,24 @@ int get_solutions_count(int grid[][NN], int limit) {
             }
         }
     }
-    int solutions = count_solutions(grid, zeros, zeros_count, 0, limit);
+    int rows[NN];
+    int cols[NN];
+    int squares[NN];
+    int square_idxes[NN][NN];
+    memset(rows, 0, NN * sizeof(int));
+    memset(cols, 0, NN * sizeof(int));
+    memset(squares, 0, NN * sizeof(int));
+    for(int i = 0; i < NN; ++i) {
+        for(int j = 0; j < NN; ++j) {
+            int mask = (1 << grid[i][j]);
+            rows[i] |= mask;
+            cols[j] |= mask;
+            int square_idx = i / N * N + j / N;
+            square_idxes[i][j] = square_idx;
+            squares[square_idx] |= mask;
+        }
+    }
+    int solutions = count_solutions(rows, cols, squares, square_idxes, zeros, zeros_count, 0, limit);
     return solutions;
 }
 
