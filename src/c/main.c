@@ -201,47 +201,52 @@ int get_solutions_count(int grid[][NN], int limit) {
 gen_result generate_grid(int empty_entries) {
     int empty_grid[NN][NN];
     pair idxes[ALL];
+    pair idxes_copy[ALL];
     for(int i = 0; i < NN; ++i) {
         for(int j = 0; j < NN; ++j) {
             empty_grid[i][j] = 0;
             idxes[i * NN + j].first = i;
             idxes[i * NN + j].second = j;
+            idxes_copy[i * NN + j].first = i;
+            idxes_copy[i * NN + j].second = j;
         }
     }
 
-    while(1) {
-        int (*random_solution)[NN] = (int(*)[NN]) get_random_solution(empty_grid);
-        if(empty_entries <= 0) {
-            gen_result result;
-            result.puzzle = random_solution;
-            result.solution = random_solution;
-            return result;
-        }
-        pair_random_shuffle(idxes, ALL);
-        int (*grid_cpy)[NN] = (int(*)[NN]) malloc(ALL * sizeof(int));
-        memcpy(grid_cpy, random_solution, ALL * sizeof(int));
-        int left_to_take = empty_entries;
-        int idx = ALL - 1;
-        while(idx + 1 >= left_to_take && left_to_take > 0) {
-            int prev_value = random_solution[idxes[idx].first][idxes[idx].second];
-            random_solution[idxes[idx].first][idxes[idx].second] = 0;
-            int solutions = get_solutions_count(random_solution, 2);
-            if(solutions == 1) {
-                --left_to_take;
-            } else {
-                random_solution[idxes[idx].first][idxes[idx].second] = prev_value;
+    int (*solution)[NN] = (int(*)[NN]) malloc(ALL * sizeof(int));
+    int (*puzzle)[NN] = (int(*)[NN]) malloc(ALL * sizeof(int));
+    memset(solution, 0, ALL * sizeof(int));
+    fill_grid_randomly(solution, idxes_copy, ALL, 0);
+    memcpy(puzzle, solution, ALL * sizeof(int));
+    if(empty_entries > 0) {
+        while(1) {
+            pair_random_shuffle(idxes, ALL);
+            int left_to_take = empty_entries;
+            int idx = ALL - 1;
+            while(idx + 1 >= left_to_take && left_to_take > 0) {
+                int prev_value = puzzle[idxes[idx].first][idxes[idx].second];
+                puzzle[idxes[idx].first][idxes[idx].second] = 0;
+                int solutions = get_solutions_count(puzzle, 2);
+                if(solutions == 1) {
+                    --left_to_take;
+                } else {
+                    puzzle[idxes[idx].first][idxes[idx].second] = prev_value;
+                }
+                --idx;
             }
-            --idx;
+            if(left_to_take > 0) {
+                memset(solution, 0, ALL * sizeof(int));
+                fill_grid_randomly(solution, idxes_copy, ALL, 0);
+                memcpy(puzzle, solution, ALL * sizeof(int));
+            } else {
+                break;
+            }
         }
-        if(left_to_take == 0) {
-            gen_result result;
-            result.puzzle = random_solution;
-            result.solution = grid_cpy;
-            return result;
-        }
-        free(grid_cpy);
-        free(random_solution);
     }
+
+    gen_result result;
+    result.puzzle = puzzle;
+    result.solution = solution;
+    return result;
 }
 
 int main(int argc, char* argv[]) {
