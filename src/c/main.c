@@ -17,6 +17,13 @@ typedef struct {
     int (*solution)[NN];
 } gen_result;
 
+void free_gen_result(gen_result value) {
+    free(value.puzzle);
+    if(value.puzzle != value.solution) {
+        free(value.solution);
+    }
+}
+
 void int_random_shuffle(int arr[], int n) {
     for(int i = n - 1; i > 0; --i) {
         int j = rand() % (i + 1);
@@ -263,6 +270,5 @@ int main(int argc, char* argv[]) {
         }
         printf("\n");
     }
-    free(result.puzzle);
-    free(result.solution);
+    free_gen_result(result);
 }
