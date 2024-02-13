@@ -33,9 +33,10 @@ def __valid_col(grid: list, ii: int, nn: int) -> bool:
     return True
 
 def get_random_solution(grid: list, n: int) -> list:
-    def inner_get_solution(grid: list, n: int, nn: int, nums: list, zeros: list, m: int, idx: int) -> list:
+    def inner_get_solution(grid: list, n: int, nn: int, zeros: list, m: int, idx: int) -> list:
         zero = zeros[idx]
         i, ii = zero
+        nums = [x for x in range(1, nn + 1)]
         random.shuffle(nums)
         for k in nums:
             grid[i][ii] = k
@@ -43,7 +44,7 @@ def get_random_solution(grid: list, n: int) -> list:
                 if idx + 1 == m:
                     return grid
                 grid_cpy = deepcopy(grid)
-                solution = inner_get_solution(grid_cpy, n, nn, nums, zeros, m, idx + 1)
+                solution = inner_get_solution(grid_cpy, n, nn, zeros, m, idx + 1)
                 grid[i][ii] = 0
                 if solution != None:
                     return solution
@@ -58,8 +59,7 @@ def get_random_solution(grid: list, n: int) -> list:
             if grid[i][ii] == 0:
                 zeros.append((i, ii))
     nn = n ** 2
-    nums = [i for i in range(1, nn + 1)]
-    return inner_get_solution(grid, n, n ** 2, nums, zeros, len(zeros), 0)
+    return inner_get_solution(grid, n, n ** 2, zeros, len(zeros), 0)
 
 def count_solutions(grid: list, n: int, limit: int) -> int:
     def inner_count_solutions(grid: list, n: int, nn: int, limit: int, zeros: list, m: int, idx: int):
