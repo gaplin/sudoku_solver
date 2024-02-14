@@ -1,8 +1,12 @@
 #ifndef SUDOKU_H
 #define SUDOKU_H
 
+// Size of single square.
+// For classis 9x9 sudoku square size is 3
 #define SUDOKU_N 3
+// Count of available numbers
 #define SUDOKU_NN 9
+// Count of all numbers in the grid
 #define SUDOKU_ALL 81
 
 // Result of random puzzle generation.
