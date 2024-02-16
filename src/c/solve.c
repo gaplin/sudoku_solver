@@ -9,7 +9,10 @@ int main(int argc, char* argv[]) {
 
     for(int i = 0; i < SUDOKU_NN; ++i) {
         for(int j = 0; j < SUDOKU_NN; ++j) {
-            scanf("%d", &puzzle[i][j]);
+            if(scanf("%d", &puzzle[i][j]) != 1 || puzzle[i][j] < 0 || puzzle[i][j] > SUDOKU_NN) {
+                printf("Invalid input value. Only digits are acceptable.\n");
+                return -1;
+            }
         }
     }
 
