@@ -5,7 +5,7 @@ Python and C solution for solving and generating sudoku puzzles. </br>
 ### Python usage
 - Solver </br>
     To solve the puzzle you need to run `solve.py` script. </br>
-    Input is taken from stdin. Should be of the form: 9 rows with 9 numbers separated by spaces where. For missing entries any character can be used. </br>
+    Input is taken from stdin. Should be of the form: 9 rows with 9 numbers separated by spaces. For missing entries any character can be used. </br>
     Example input:
     ```
     _ _ 9 _ _ _ _ 7 _
